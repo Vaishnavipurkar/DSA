@@ -1,0 +1,84 @@
+#include <iostream>
+
+struct ListNode {
+    int val;
+    ListNode* next;
+
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+void swapKthNodes(ListNode*& head, int k) {
+    if (!head || k <= 0) {
+        return;
+    }
+
+    ListNode* dummy = new ListNode(0);
+    dummy->next = head;
+
+    ListNode* fast = dummy;
+    ListNode* slow = dummy;
+    ListNode* kthFromBegin = nullptr;
+    ListNode* kthFromEnd = nullptr;
+
+    // Move fast pointer to the kth node from the beginning
+    for (int i = 0; i < k; ++i) {
+        if (!fast) {
+            delete dummy;
+            return; // Invalid k, k is greater than the length of the linked list
+        }
+        fast = fast->next;
+    }
+
+    // Move both pointers until fast reaches the end
+    while (fast) {
+        kthFromBegin = slow;
+        slow = slow->next;
+        fast = fast->next;
+    }
+
+    // Assign the kth node from the end
+    kthFromEnd = kthFromBegin->next;
+
+    // Swap the next pointers of kth nodes
+    kthFromBegin->next = head;
+    head = kthFromEnd->next;
+    kthFromEnd->next = nullptr;
+
+    // Clean up memory
+    delete dummy;
+}
+
+// Function to print a linked list
+void printLinkedList(ListNode* head) {
+    while (head) {
+        std::cout << head->val << " ";
+        head = head->next;
+    }
+    std::cout << "\n";
+}
+
+int main() {
+    ListNode* head = new ListNode(1);
+    head->next = new ListNode(2);
+    head->next->next = new ListNode(3);
+    head->next->next->next = new ListNode(4);
+    head->next->next->next->next = new ListNode(5);
+
+    std::cout << "Original Linked List: ";
+    printLinkedList(head);
+
+    int k = 2;
+    swapKthNodes(head, k);
+
+    std::cout << "Linked List after swapping k-th nodes: ";
+    printLinkedList(head);
+
+    // Clean up memory
+    while (head) {
+        ListNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+
+    return 0;
+}
